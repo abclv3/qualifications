@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signUp, supabase } from '@/lib/supabase';
+import { signUp, checkUsernameExists } from '@/lib/supabase';
 import { User } from '@/types';
 
 interface SignUpProps { onSuccess: (user: User) => void; onBackToLogin: () => void; }
@@ -16,15 +16,14 @@ export default function SignUp({ onSuccess, onBackToLogin }: SignUpProps) {
     const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
     const [passwordMatch, setPasswordMatch] = useState<'idle' | 'match' | 'mismatch'>('idle');
 
-    // 아이디 중복 확인
+    // 아이디 중복 확인 (Firebase)
     useEffect(() => {
         if (!formData.username.trim()) { setUsernameStatus('idle'); return; }
         const timer = setTimeout(async () => {
             setUsernameStatus('checking');
             try {
-                if (!supabase) { setUsernameStatus('idle'); return; }
-                const { data } = await supabase.from('users').select('username').eq('username', formData.username).maybeSingle();
-                setUsernameStatus(data ? 'taken' : 'available');
+                const exists = await checkUsernameExists(formData.username);
+                setUsernameStatus(exists ? 'taken' : 'available');
             } catch { setUsernameStatus('idle'); }
         }, 500);
         return () => clearTimeout(timer);
@@ -50,7 +49,7 @@ export default function SignUp({ onSuccess, onBackToLogin }: SignUpProps) {
             const { data, error: signUpError } = await signUp(formData.email, formData.password, { username: formData.username, name: formData.name });
             if (signUpError) { setError((signUpError as any).message || '회원가입 실패'); setLoading(false); return; }
             if (data?.user) {
-                const user: User = { id: data.user.id, username: formData.username, name: formData.name, email: formData.email, authId: data.user.id };
+                const user: User = { id: data.user.uid, username: formData.username, name: formData.name, email: formData.email, authId: data.user.uid };
                 sessionStorage.setItem('authenticated', 'true');
                 sessionStorage.setItem('current-user', JSON.stringify(user));
                 onSuccess(user);

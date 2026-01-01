@@ -27,8 +27,8 @@ export default function Login({ onSuccess, onSignUp }: LoginProps) {
             }
             const { data, error: authError } = await signIn(userEmail, password);
             if (authError || !data?.user) { setError('아이디 또는 비밀번호가 올바르지 않습니다.'); setLoading(false); return; }
-            const userData = await getUserByAuthId(data.user.id);
-            const user = userData || { id: data.user.id, username, name: username, email: userEmail, authId: data.user.id };
+            const userData = await getUserByAuthId(data.user.uid);
+            const user = userData || { id: data.user.uid, username, name: username, email: userEmail, authId: data.user.uid };
             sessionStorage.setItem('authenticated', 'true');
             sessionStorage.setItem('current-user', JSON.stringify(user));
             onSuccess(user as User);
