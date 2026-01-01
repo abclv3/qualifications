@@ -12,141 +12,94 @@ export default function ResultCard({ result, onRestart, onShowWrongAnswers }: Re
     const { totalQuestions, correctAnswers, incorrectAnswers, score } = result;
 
     const getScoreColor = () => {
-        if (score >= 80) return 'text-emerald-400';
-        if (score >= 60) return 'text-blue-400';
-        if (score >= 40) return 'text-amber-400';
-        return 'text-rose-400';
+        if (score >= 80) return '#4ade80';
+        if (score >= 60) return '#14b8a6';
+        if (score >= 40) return '#fbbf24';
+        return '#f87171';
     };
 
-    const getScoreMessage = () => {
-        if (score >= 80) return '🎉 합격권입니다! 훌륭해요!';
-        if (score >= 60) return '💪 조금만 더 힘내세요!';
-        if (score >= 40) return '📚 복습이 필요해요!';
-        return '🔥 기초부터 다시 시작하세요!';
+    const getMessage = () => {
+        if (score >= 80) return { emoji: '🎉', text: '합격권입니다! 훌륭해요!' };
+        if (score >= 60) return { emoji: '💪', text: '조금만 더 힘내세요!' };
+        if (score >= 40) return { emoji: '📚', text: '복습이 필요해요!' };
+        return { emoji: '🔥', text: '기초부터 다시 시작하세요!' };
     };
+
+    const t = { bg: '#1a1a1a', card: '#252525', border: '#333', text: '#e0e0e0', muted: '#888', accent: '#14b8a6', success: '#4ade80', error: '#f87171', warning: '#fbbf24' };
+    const msg = getMessage();
 
     return (
-        <div className="glass-card p-8 space-y-8 max-w-2xl mx-auto">
-            {/* Header */}
-            <div className="text-center space-y-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 mb-4">
-                    <span className="text-4xl">📊</span>
-                </div>
-                <h2 className="gradient-text text-3xl font-black">시험 결과</h2>
-                <p className="text-gray-400 text-sm">{getScoreMessage()}</p>
+        <div style={{ background: t.card, borderRadius: '20px', padding: '32px', maxWidth: '500px', margin: '0 auto', border: `1px solid ${t.border}` }}>
+            {/* 헤더 */}
+            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📊</div>
+                <h2 style={{ fontSize: '28px', fontWeight: '700', color: t.text, margin: '0 0 8px 0' }}>시험 결과</h2>
+                <p style={{ fontSize: '15px', color: t.muted, margin: 0 }}>{msg.emoji} {msg.text}</p>
             </div>
 
-            {/* Score Circle */}
-            <div className="flex justify-center">
-                <div className="relative w-48 h-48">
-                    {/* Background Circle */}
-                    <svg className="w-full h-full transform -rotate-90">
-                        <circle
-                            cx="96"
-                            cy="96"
-                            r="88"
-                            stroke="rgba(148, 163, 184, 0.1)"
-                            strokeWidth="12"
-                            fill="none"
-                        />
-                        {/* Progress Circle */}
-                        <circle
-                            cx="96"
-                            cy="96"
-                            r="88"
-                            stroke="url(#gradient)"
-                            strokeWidth="12"
-                            fill="none"
-                            strokeDasharray={`${(score / 100) * 553} 553`}
+            {/* 점수 원형 */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+                <div style={{ position: 'relative', width: '180px', height: '180px' }}>
+                    <svg width="180" height="180" style={{ transform: 'rotate(-90deg)' }}>
+                        <circle cx="90" cy="90" r="80" fill="none" stroke={t.border} strokeWidth="12" />
+                        <circle cx="90" cy="90" r="80" fill="none" stroke={getScoreColor()} strokeWidth="12"
+                            strokeDasharray={`${(score / 100) * 502} 502`}
                             strokeLinecap="round"
-                            className="transition-all duration-1000 ease-out"
+                            style={{ transition: 'stroke-dasharray 1s ease' }}
                         />
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#0ea5e9" />
-                                <stop offset="50%" stopColor="#8b5cf6" />
-                                <stop offset="100%" stopColor="#f59e0b" />
-                            </linearGradient>
-                        </defs>
                     </svg>
-                    {/* Score Text */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className={`text-5xl font-black ${getScoreColor()}`}>
-                            {score}
-                        </span>
-                        <span className="text-gray-400 text-sm font-semibold mt-1">점</span>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '48px', fontWeight: '800', color: getScoreColor() }}>{score}</span>
+                        <span style={{ fontSize: '14px', color: t.muted }}>점</span>
                     </div>
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4">
-                <div className="bg-gray-800/40 rounded-xl p-4 text-center border border-gray-700/50">
-                    <div className="text-2xl font-black text-blue-400">{totalQuestions}</div>
-                    <div className="text-xs text-gray-400 mt-1 font-semibold">총 문제</div>
+            {/* 통계 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ background: t.bg, borderRadius: '12px', padding: '16px', textAlign: 'center', border: `1px solid ${t.border}` }}>
+                    <div style={{ fontSize: '24px', fontWeight: '700', color: t.accent }}>{totalQuestions}</div>
+                    <div style={{ fontSize: '12px', color: t.muted }}>총 문제</div>
                 </div>
-                <div className="bg-emerald-500/10 rounded-xl p-4 text-center border border-emerald-500/30">
-                    <div className="text-2xl font-black text-emerald-400">{correctAnswers}</div>
-                    <div className="text-xs text-gray-400 mt-1 font-semibold">정답</div>
+                <div style={{ background: 'rgba(74,222,128,0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center', border: '1px solid rgba(74,222,128,0.3)' }}>
+                    <div style={{ fontSize: '24px', fontWeight: '700', color: t.success }}>{correctAnswers}</div>
+                    <div style={{ fontSize: '12px', color: t.muted }}>정답</div>
                 </div>
-                <div className="bg-rose-500/10 rounded-xl p-4 text-center border border-rose-500/30">
-                    <div className="text-2xl font-black text-rose-400">{incorrectAnswers}</div>
-                    <div className="text-xs text-gray-400 mt-1 font-semibold">오답</div>
-                </div>
-            </div>
-
-            {/* Progress Bar */}
-            <div className="space-y-2">
-                <div className="flex justify-between text-sm font-semibold">
-                    <span className="text-emerald-400">정답률</span>
-                    <span className="text-gray-400">
-                        {correctAnswers} / {totalQuestions}
-                    </span>
-                </div>
-                <div className="progress-bar">
-                    <div
-                        className="progress-fill"
-                        style={{ width: `${(correctAnswers / totalQuestions) * 100}%` }}
-                    />
+                <div style={{ background: 'rgba(248,113,113,0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center', border: '1px solid rgba(248,113,113,0.3)' }}>
+                    <div style={{ fontSize: '24px', fontWeight: '700', color: t.error }}>{incorrectAnswers}</div>
+                    <div style={{ fontSize: '12px', color: t.muted }}>오답</div>
                 </div>
             </div>
 
-            {/* Tips */}
-            <div className="bg-gradient-to-r from-blue-500/10 to-violet-500/10 rounded-xl p-5 border border-blue-500/20">
-                <h4 className="text-sm font-bold text-blue-300 mb-3 flex items-center gap-2">
-                    <span>💡</span>
-                    <span>학습 팁</span>
-                </h4>
-                <ul className="space-y-2 text-sm text-gray-300">
-                    <li className="flex items-start gap-2">
-                        <span className="text-blue-400 mt-0.5">•</span>
-                        <span>틀린 문제의 치트키를 반복해서 복습하세요.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-violet-400 mt-0.5">•</span>
-                        <span>공식 문제는 직접 손으로 써가며 외우는 것이 효과적입니다.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                        <span className="text-amber-400 mt-0.5">•</span>
-                        <span>매일 10문제씩 풀면 2주 안에 실력이 향상됩니다.</span>
-                    </li>
+            {/* 정답률 바 */}
+            <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
+                    <span style={{ color: t.success, fontWeight: '600' }}>정답률</span>
+                    <span style={{ color: t.muted }}>{correctAnswers} / {totalQuestions}</span>
+                </div>
+                <div style={{ height: '10px', background: t.border, borderRadius: '5px', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(correctAnswers / totalQuestions) * 100}%`, background: `linear-gradient(90deg, ${t.accent}, ${t.success})`, borderRadius: '5px', transition: 'width 0.5s' }} />
+                </div>
+            </div>
+
+            {/* 학습 팁 */}
+            <div style={{ background: 'rgba(20,184,166,0.08)', borderRadius: '12px', padding: '16px', marginBottom: '24px', border: '1px solid rgba(20,184,166,0.2)' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: '600', color: t.accent, margin: '0 0 12px 0' }}>💡 학습 팁</h4>
+                <ul style={{ margin: 0, padding: '0 0 0 16px', fontSize: '13px', color: t.text, lineHeight: '1.8' }}>
+                    <li>틀린 문제의 치트키를 반복해서 복습하세요.</li>
+                    <li>공식 문제는 직접 손으로 써가며 외우세요.</li>
+                    <li>매일 10문제씩 풀면 2주 안에 실력이 향상됩니다.</li>
                 </ul>
             </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
+            {/* 버튼들 */}
+            <div>
                 {incorrectAnswers > 0 && (
-                    <button
-                        onClick={onShowWrongAnswers}
-                        className="btn-secondary w-full"
-                    >
-                        <div className="flex items-center justify-center gap-2">
-                            <span className="text-rose-400 text-lg">📝</span>
-                            <span>오답노트 보기 ({incorrectAnswers}개 오답)</span>
-                        </div>
+                    <button onClick={onShowWrongAnswers} style={{ width: '100%', padding: '16px', background: t.bg, border: `1px solid ${t.border}`, borderRadius: '12px', color: t.text, fontSize: '15px', fontWeight: '500', cursor: 'pointer', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        📝 <span>오답노트 보기 ({incorrectAnswers}개 오답)</span>
                     </button>
                 )}
-                <button onClick={onRestart} className="btn-primary w-full">
+                <button onClick={onRestart} style={{ width: '100%', padding: '16px', background: `linear-gradient(135deg, ${t.accent} 0%, #0d9488 100%)`, border: 'none', borderRadius: '12px', color: 'white', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
                     다시 풀기
                 </button>
             </div>

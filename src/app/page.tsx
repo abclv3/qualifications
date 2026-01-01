@@ -78,8 +78,14 @@ export default function Home() {
 
                 {isStarted && !showResult && cur && (
                     <>
+                        {/* 진행률 + 홈 버튼 */}
                         <div style={{ background: t.card, borderRadius: '10px', padding: '16px', marginBottom: '16px', border: `1px solid ${t.border}` }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px', color: t.muted }}><span>진행률</span><span style={{ color: t.text, fontWeight: '600' }}>{currentQuestionIndex + 1} / {filteredQuestions.length}</span></div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                <button onClick={handleRestart} style={{ padding: '8px 16px', background: t.bg, border: `1px solid ${t.border}`, borderRadius: '8px', color: t.muted, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    ← 홈으로
+                                </button>
+                                <span style={{ fontSize: '14px', color: t.text, fontWeight: '600' }}>{currentQuestionIndex + 1} / {filteredQuestions.length}</span>
+                            </div>
                             <div style={{ height: '8px', background: t.border, borderRadius: '4px', overflow: 'hidden' }}><div style={{ height: '100%', background: `linear-gradient(90deg, ${t.accent}, ${t.accentDark})`, borderRadius: '4px', width: `${((currentQuestionIndex + 1) / filteredQuestions.length) * 100}%`, transition: 'width 0.3s' }} /></div>
                         </div>
                         <QuizCard question={cur} questionNumber={currentQuestionIndex + 1} totalQuestions={filteredQuestions.length} onAnswer={handleAnswer} showResult={showResult} />
