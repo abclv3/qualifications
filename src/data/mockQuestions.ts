@@ -1,6 +1,11 @@
 import { Question } from '@/types';
+import { circuitQuestions } from './questions_circuit';
+import { magneticsQuestions } from './questions_magnetics';
+import { machineQuestions } from './questions_machine';
+import { powerQuestions } from './questions_power';
+import { standardQuestions } from './questions_standard';
 
-export const koreanMockQuestions: Question[] = [
+const baseQuestions: Question[] = [
     // ========== 회로이론 및 제어공학 (10문제) ==========
     {
         id: '1', category: '회로이론 및 제어공학', type: '공식',
@@ -458,4 +463,14 @@ export const koreanMockQuestions: Question[] = [
         cheat_key: '💡 절연저항: 150V↓→0.1MΩ, 150V↑→0.2MΩ',
         created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     },
+];
+
+// 모든 문제 합치기 (총 200문제)
+export const koreanMockQuestions: Question[] = [
+    ...baseQuestions,          // 기본 50문제
+    ...circuitQuestions,       // 회로이론 30문제
+    ...magneticsQuestions,     // 전기자기학 30문제
+    ...machineQuestions,       // 전기기기 30문제
+    ...powerQuestions,         // 전력공학 30문제
+    ...standardQuestions,      // 전기설비기술기준 30문제
 ];
