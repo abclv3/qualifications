@@ -63,10 +63,19 @@ export const getEmailByUsername = async (username: string): Promise<string | nul
   try {
     const q = query(collection(db, 'users'), where('username', '==', username));
     const snapshot = await getDocs(q);
-    if (snapshot.empty) return null;
+    if (snapshot.empty) {
+      console.log('사용자를 찾을 수 없음:', username);
+      return null;
+    }
     return snapshot.docs[0].data().email;
-  } catch (error) {
+  } catch (error: any) {
     console.error('이메일 조회 에러:', error);
+    console.error('에러 코드:', error?.code);
+    console.error('에러 메시지:', error?.message);
+    // Firestore 권한 에러인 경우 특별 처리
+    if (error?.code === 'permission-denied') {
+      console.error('Firestore 보안 규칙으로 인해 읽기가 거부되었습니다.');
+    }
     return null;
   }
 };

@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // users 컬렉션: 
+    // - 읽기: 모든 사용자 (로그인 시 username으로 이메일 조회 필요)
+    // - 쓰기: 인증된 사용자 본인의 문서만
+    match /users/{userId} {
+      allow read: if true;  // 로그인 전 username으로 이메일 조회 허용
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // notes 컬렉션:
+    // - 읽기/쓰기: 인증된 사용자 본인의 노트만
+    match /notes/{noteId} {
+      allow read, write: if request.auth != null && 
+                           resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && 
+                      request.resource.data.userId == request.auth.uid;
+    }
+  }
+}

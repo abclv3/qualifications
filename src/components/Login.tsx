@@ -22,7 +22,12 @@ export default function Login({ onSuccess, onSignUp }: LoginProps) {
             let userEmail = username;
             if (!username.includes('@')) {
                 const email = await getEmailByUsername(username);
-                if (!email) { setError('존재하지 않는 아이디입니다.'); setLoading(false); return; }
+                if (!email) {
+                    // 이메일을 찾지 못한 경우 - 아이디가 없거나 Firestore 권한 문제
+                    setError('아이디를 찾을 수 없습니다. 이메일로 로그인해보세요.');
+                    setLoading(false);
+                    return;
+                }
                 userEmail = email;
             }
             const { data, error: authError } = await signIn(userEmail, password);
