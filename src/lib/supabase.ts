@@ -61,21 +61,32 @@ export const signOut = async () => {
 // 아이디로 이메일 찾기
 export const getEmailByUsername = async (username: string): Promise<string | null> => {
   try {
+    console.log('[DEBUG] username으로 이메일 조회 시작:', username);
     const q = query(collection(db, 'users'), where('username', '==', username));
     const snapshot = await getDocs(q);
+    console.log('[DEBUG] Firestore 쿼리 성공, 결과 수:', snapshot.size);
     if (snapshot.empty) {
-      console.log('사용자를 찾을 수 없음:', username);
+      console.log('[DEBUG] 사용자를 찾을 수 없음:', username);
+      // 디버깅: 모든 users 문서 출력
+      try {
+        const allUsersSnapshot = await getDocs(collection(db, 'users'));
+        console.log('[DEBUG] 전체 users 수:', allUsersSnapshot.size);
+        allUsersSnapshot.docs.forEach(doc => {
+          console.log('[DEBUG] 저장된 username:', doc.data().username);
+        });
+      } catch (e) {
+        console.log('[DEBUG] 전체 users 조회 실패:', e);
+      }
       return null;
     }
-    return snapshot.docs[0].data().email;
+    const email = snapshot.docs[0].data().email;
+    console.log('[DEBUG] 이메일 찾음:', email);
+    return email;
   } catch (error: any) {
-    console.error('이메일 조회 에러:', error);
-    console.error('에러 코드:', error?.code);
-    console.error('에러 메시지:', error?.message);
-    // Firestore 권한 에러인 경우 특별 처리
-    if (error?.code === 'permission-denied') {
-      console.error('Firestore 보안 규칙으로 인해 읽기가 거부되었습니다.');
-    }
+    // 에러 발생 시 화면에 표시 (디버깅용)
+    const errorMsg = `[Firestore 에러] 코드: ${error?.code}, 메시지: ${error?.message}`;
+    console.error(errorMsg);
+    alert(errorMsg); // 디버깅용 - 나중에 제거
     return null;
   }
 };
